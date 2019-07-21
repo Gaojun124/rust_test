@@ -1,5 +1,3 @@
-extern crate my_lib;
-
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
