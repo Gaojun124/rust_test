@@ -1,6 +1,11 @@
+extern crate my_lib;
+
 use std::fs::File;
 use std::io::prelude::*;
+use std::path::Path;
 
+mod mods;
+use mods::test;
 fn main() {
     let mut f = File::create("../test.txt").unwrap();
 
@@ -9,6 +14,11 @@ fn main() {
     for _ in 1..100 {
         f.write(s.as_bytes()).unwrap();
     }
+    println!("{:?}", Path::new("../test.txt").file_stem().unwrap());
+
+    test::run();
+
+    mods::run();
 
     // `file` goes out of scope, and the "hello.txt" file gets closed
 }
