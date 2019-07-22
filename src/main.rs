@@ -1,22 +1,30 @@
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::Path;
-
 mod mods;
 use mods::test;
+
+extern crate clap;
+use clap::App;
+
+use actix_web::{web, HttpRequest, HttpServer, Responder};
+
+fn greet(req: HttpRequest) -> impl Responder {
+    let name = req.match_info().get("name").unwrap_or("World");
+    format!("Hello {}!", &name)
+}
+
 fn main() {
-    let mut f = File::create("../test.txt").unwrap();
+    App::new("myapp")
+        .version("1.0")
+        .about("Does great things!")
+        .author("Kevin K.")
+        .get_matches();
 
-    // Read the file contents into a string, returns `io::Result<usize>`
-    let s = String::from("adfssafasfsdaf");
-    for _ in 1..100 {
-        f.write(s.as_bytes()).unwrap();
-    }
-    println!("{:?}", Path::new("../test.txt").file_stem().unwrap());
-
-    test::run();
-
-    mods::run();
-
-    // `file` goes out of scope, and the "hello.txt" file gets closed
+    HttpServer::new(|| {
+        actix_web::App::new()
+            .route("/", web::get().to(greet))
+            .route("/{name}", web::get().to(greet))
+    })
+    .bind("127.0.0.1:8000")
+    .expect("Can not bind to port 8000")
+    .run()
+    .unwrap();
 }
